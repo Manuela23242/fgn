@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Freeze AI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&family=Inter:wght@400;600;800&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-color: #0b0b0b;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .main-content {
+      position: absolute;
+      top: 20%;
+      left: 15%;
+      width: 35%;
+    }
+
+    .text {
+      font-size: 4rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .text2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: gainsboro;
+      line-height: 1.4;
+      margin-top: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      background-color: #87CEFA;
+      color: #0b0b0b;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #6cb8e6;
+      transform: translateY(-2px);
+    }
+
+    .discord-btn {
+      background-color: transparent;
+      color: #87CEFA;
+      border: 2px solid #87CEFA;
+    }
+
+    .discord-btn:hover {
+      background-color: rgba(135, 206, 250, 0.1);
+    }
+
+    .video-container {
+      position: absolute;
+      top: 20%;
+      right: 15%;
+      width: 35%;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(135, 206, 250, 0.3);
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+    }
+
+    .stats-container {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      width: 80%;
+      max-width: 1200px;
+    }
+
+    .stat-card {
+      background-color: rgba(20, 20, 20, 0.8);
+      border-radius: 10px;
+      padding: 25px;
+      width: 200px;
+      text-align: center;
+      border: 1px solid rgba(135, 206, 250, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(135, 206, 250, 0.5);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #87CEFA;
+      margin-bottom: 10px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stat-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 15px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stat-desc {
+      font-size: 0.9rem;
+      color: gainsboro;
+      line-height: 1.4;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .text .row {
+      display: flex;
+      align-items: center;
+    }
+
+    .highlight {
+      color: #87CEFA;
+      font-size: 4rem;
+      margin-left: 10px;
+      font-weight: 800;
+    }
+
+    /* Performance Section */
+    .performance-section {
+      margin-top: 100vh;
+      padding: 100px 15%;
+      background-color: #0b0b0b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      border-top: 1px solid rgba(135, 206, 250, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .performance-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .performance-content {
+      width: 45%;
+      z-index: 1;
+    }
+
+    .performance-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .performance-title span {
+      color: #87CEFA;
+    }
+
+    .performance-subtitle {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #87CEFA;
+      margin-bottom: 30px;
+    }
+
+    .performance-text {
+      font-size: 1rem;
+      color: gainsboro;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .performance-image {
+      width: 45%;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(135, 206, 250, 0.3);
+      z-index: 1;
+    }
+
+    .performance-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+      padding: 80px 15%;
+      background-color: #0f0f0f;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reviews-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 10px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .reviews-subtitle {
+      font-size: 1rem;
+      color: #87CEFA;
+      margin-bottom: 40px;
+      font-family: 'Inter', sans-serif;
+      z-index: 1;
+      position: relative;
+    }
+
+    .reviews-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 200px;
+      z-index: 1;
+    }
+
+    .review {
+      background-color: rgba(20, 20, 20, 0.8);
+      border-radius: 10px;
+      padding: 30px;
+      margin: 20px;
+      border: 1px solid rgba(135, 206, 250, 0.2);
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .review.active {
+      opacity: 1;
+    }
+
+    .review-stars {
+      color: #FFD700;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .review-text {
+      font-size: 1rem;
+      color: gainsboro;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .review-author {
+      font-size: 0.9rem;
+      color: #87CEFA;
+      font-weight: 600;
+    }
+
+    .review-date {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* Product Selection Modal */
+    .product-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .product-content {
+      background-color: #0f0f0f;
+      max-width: 800px;
+      margin: 50px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(135, 206, 250, 0.3);
+      position: relative;
+    }
+
+    .product-header {
+      background-color: rgba(20, 20, 20, 0.8);
+      padding: 20px;
+      border-bottom: 1px solid rgba(135, 206, 250, 0.2);
+      text-align: center;
+    }
+
+    .product-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin: 0;
+    }
+
+    .product-subtitle {
+      font-size: 1rem;
+      color: #87CEFA;
+      margin-top: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .product-body {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .product-categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .product-category {
+      background-color: rgba(20, 20, 20, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      width: 200px;
+      text-align: center;
+      border: 1px solid rgba(135, 206, 250, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .product-category:hover {
+      transform: translateY(-5px);
+      border-color: rgba(135, 206, 250, 0.5);
+      box-shadow: 0 5px 15px rgba(135, 206, 250, 0.2);
+    }
+
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .category-icon {
+      font-size: 2rem;
+      color: #87CEFA;
+      margin-bottom: 15px;
+    }
+
+    .category-desc {
+      font-size: 0.9rem;
+      color: gainsboro;
+    }
+
+    /* Purchase Modal */
+    .purchase-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .purchase-content {
+      background-color: #0f0f0f;
+      max-width: 800px;
+      margin: 50px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(135, 206, 250, 0.3);
+      position: relative;
+    }
+
+    .purchase-header {
+      background-color: rgba(20, 20, 20, 0.8);
+      padding: 20px;
+      border-bottom: 1px solid rgba(135, 206, 250, 0.2);
+      text-align: center;
+    }
+
+    .purchase-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin: 0;
+    }
+
+    .purchase-subtitle {
+      font-size: 1rem;
+      color: #87CEFA;
+      margin-top: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .purchase-body {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .purchase-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .purchase-option {
+      background-color: rgba(20, 20, 20, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      width: 200px;
+      text-align: center;
+      border: 1px solid rgba(135, 206, 250, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .purchase-option:hover {
+      transform: translateY(-5px);
+      border-color: rgba(135, 206, 250, 0.5);
+      box-shadow: 0 5px 15px rgba(135, 206, 250, 0.2);
+    }
+
+    .purchase-option.selected {
+      border-color: #87CEFA;
+      background-color: rgba(135, 206, 250, 0.1);
+    }
+
+    .option-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .option-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #87CEFA;
+      margin-bottom: 15px;
+    }
+
+    .option-duration {
+      font-size: 0.9rem;
+      color: gainsboro;
+    }
+
+    .purchase-image {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 30px;
+      border: 1px solid rgba(135, 206, 250, 0.3);
+    }
+
+    .purchase-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .purchase-btn {
+      background-color: #87CEFA;
+      color: #0b0b0b;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .purchase-btn:hover {
+      background-color: #6cb8e6;
+      transform: translateY(-2px);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content, .video-container {
+        position: static;
+        width: 90%;
+        margin: 20px auto;
+      }
+      
+      .stats-container {
+        position: static;
+        transform: none;
+        margin: 40px auto;
+      }
+
+      .performance-section {
+        flex-direction: column;
+        padding: 60px 5%;
+      }
+
+      .performance-content, .performance-image {
+        width: 100%;
+      }
+
+      .performance-image {
+        margin-top: 40px;
+      }
+
+      .reviews-section {
+        padding: 60px 5%;
+      }
+
+      .product-content, .purchase-content {
+        margin: 20px auto;
+      }
+
+      .product-categories, .purchase-options {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div class="main-content">
+    <div class="text">
+      <span>The future of</span>
+      <span>aiming with</span>
+      <div class="row">
+        <span>FREEZE</span>
+        <span class="highlight">AI</span>
+      </div>
+    </div>
+
+    <div class="text2">
+      <span>The most advanced AI Powered Aim Assist on the market.</span>
+    </div>
+
+    <div class="buttons">
+      <button class="btn" id="explore-btn">Explore Products</button>
+      <button class="btn discord-btn">Join Our Discord</button>
+    </div>
+  </div>
+
+  <div class="video-container">
+    <iframe src="https://streamable.com/o/877ghi?autoplay=1&muted=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-number">100+</div>
+      <div class="stat-title">PRODUCTS SOLD</div>
+      <div class="stat-desc">Trusted by 80+ active users, Freeze has sold more than 100 products.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">10+</div>
+      <div class="stat-title">GAMES SUPPORTED</div>
+      <div class="stat-desc">Freeze works for many games with our universal model, no extra payments for other games.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">100%</div>
+      <div class="stat-title">UNIQUE SECURITY</div>
+      <div class="stat-desc">Benefit from unique, private builds and undetectable external object detection to stay secure.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">24/7</div>
+      <div class="stat-title">EASY TO USE</div>
+      <div class="stat-desc">User friendly UI, simple installation, and 24/7 customer support.</div>
+    </div>
+  </div>
+
+  <section class="performance-section">
+    <div class="performance-content">
+      <h2 class="performance-title">INSANE <span>237 FPS</span></h2>
+      <h3 class="performance-subtitle">Insane Performance</h3>
+      <p class="performance-text">
+        Freeze is perfectly optimized to run multithreaded, which is why it even supports older GPUs. Using Freeze does not affect your input delay and requires minimal GPU usage. We have ensured that everything, including Aim Tracking, runs smoothly. Additionally, we provide tips to maximize performance, guaranteeing the best possible user experience.
+      </p>
+    </div>
+    <div class="performance-image">
+      <img src="pic/performance.png" alt="Performance Stats">
+    </div>
+    <canvas id="performance-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></canvas>
+  </section>
+
+  <section class="reviews-section">
+    <h2 class="reviews-title">765+ Customers</h2>
+    <p class="reviews-subtitle">Gave Their Feedback</p>
+    
+    <div class="reviews-container">
+      <div class="review active">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">step crazy clean UI, good support - all working fine</p>
+        <div class="review-author">- red</div>
+        <div class="review-date">24/06/2023 15:51 PM</div>
+      </div>
+      
+      <div class="review">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">First I thought myron is not that; and stuff but then I bought it and I...</p>
+        <div class="review-author">- Vadene07</div>
+        <div class="review-date">20/08/26</div>
+      </div>
+      
+      <div class="review">
+        <div class="review-stars">⭐⭐⭐⭐⭐</div>
+        <p class="review-text">Anonymous Vouch - 256 AM</p>
+        <div class="review-author">- Anonymous</div>
+        <div class="review-date">24/06/2023</div>
+      </div>
+    </div>
+    <canvas id="reviews-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></canvas>
+  </section>
+
+  <!-- Product Selection Modal -->
+  <div class="product-modal" id="product-modal">
+    <div class="product-content">
+      <span class="close-modal" id="close-product-modal">&times;</span>
+      <div class="product-header">
+        <h2 class="product-title">FREEZE PRODUCTS</h2>
+        <p class="product-subtitle">Choose your desired product category</p>
+      </div>
+      <div class="product-body">
+        <div class="product-categories">
+          <div class="product-category" id="ai-aimbot-category">
+            <div class="category-icon">🎯</div>
+            <div class="category-title">AI AIMBOT</div>
+            <div class="category-desc">Advanced AI-powered aim assistance for competitive gaming</div>
+          </div>
+          <div class="product-category" id="temp-spoofer-category">
+            <div class="category-icon">🔄</div>
+            <div class="category-title">TEMP SPOOFER</div>
+            <div class="category-desc">Temporary hardware ID spoofing solution</div>
+          </div>
+          <div class="product-category" id="perm-spoofer-category">
+            <div class="category-icon">🔒</div>
+            <div class="category-title">PERM SPOOFER</div>
+            <div class="category-desc">Permanent hardware ID spoofing solution</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <canvas id="product-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
+  </div>
+
+  <!-- Purchase Modal -->
+  <div class="purchase-modal" id="purchase-modal">
+    <div class="purchase-content">
+      <span class="close-modal" id="close-modal">&times;</span>
+      <div class="purchase-header">
+        <h2 class="purchase-title" id="modal-product-title">PRODUCT</h2>
+        <p class="purchase-subtitle" id="modal-product-subtitle">Product description</p>
+      </div>
+      <div class="purchase-body">
+        <div class="purchase-image">
+          <img src="fortnite-cheat.png" alt="Product Image" id="modal-product-image">
+        </div>
+        
+        <div class="purchase-options" id="purchase-options-container">
+          <!-- Options will be dynamically inserted here -->
+        </div>
+        
+        <button class="purchase-btn" id="checkout-btn">Proceed to Checkout</button>
+      </div>
+    </div>
+    <canvas id="purchase-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
+  </div>
+
+  <!-- SellSn.io Embed Script -->
+  <script src="https://pay.sellsn.io/embed.min.js"></script>
+
+  <script>
+    // Main Particle Animation
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+      constructor(canvasWidth, canvasHeight) {
+        this.x = Math.random() * canvasWidth;
+        this.y = Math.random() * canvasHeight;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = (Math.random() * 0.3 - 0.15); 
+        this.speedY = (Math.random() * 0.3 - 0.15);
+        this.color = `rgba(135, 206, 250, ${Math.random() * 0.5 + 0.1})`;
+      }
+
+      update(canvasWidth, canvasHeight) {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x < 0 || this.x > canvasWidth) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvasHeight) this.speedY *= -1;
+      }
+
+      draw(ctx) {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function createParticleSystem(canvasElement) {
+      const ctx = canvasElement.getContext('2d');
+      const width = canvasElement.width = canvasElement.offsetWidth;
+      const height = canvasElement.height = canvasElement.offsetHeight;
+      
+      const particles = [];
+      const particleCount = Math.floor(width * height / 12000);
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle(width, height));
+      }
+
+      function connect() {
+        for (let a = 0; a < particles.length; a++) {
+          for (let b = a; b < particles.length; b++) {
+            const dx = particles[a].x - particles[b].x;
+            const dy = particles[a].y - particles[b].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 100) {
+              const opacity = 1 - distance / 100;
+              ctx.strokeStyle = `rgba(135, 206, 250, ${opacity * 0.2})`;
+              ctx.lineWidth = 0.5;
+              ctx.beginPath();
+              ctx.moveTo(particles[a].x, particles[a].y);
+              ctx.lineTo(particles[b].x, particles[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.update(width, height);
+          p.draw(ctx);
+        });
+        connect();
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+
+      return {
+        resize: () => {
+          const newWidth = canvasElement.offsetWidth;
+          const newHeight = canvasElement.offsetHeight;
+          
+          if (newWidth !== width || newHeight !== height) {
+            canvasElement.width = newWidth;
+            canvasElement.height = newHeight;
+            
+            // Reset particles for new dimensions
+            particles.length = 0;
+            for (let i = 0; i < particleCount; i++) {
+              particles.push(new Particle(newWidth, newHeight));
+            }
+          }
+        }
+      };
+    }
+
+    // Initialize particle systems for all sections
+    const mainParticles = createParticleSystem(canvas);
+    const performanceCanvas = document.getElementById('performance-canvas');
+    const performanceParticles = createParticleSystem(performanceCanvas);
+    const reviewsCanvas = document.getElementById('reviews-canvas');
+    const reviewsParticles = createParticleSystem(reviewsCanvas);
+    const productCanvas = document.getElementById('product-canvas');
+    const productParticles = createParticleSystem(productCanvas);
+    const purchaseCanvas = document.getElementById('purchase-canvas');
+    const purchaseParticles = createParticleSystem(purchaseCanvas);
+
+    window.addEventListener('resize', () => {
+      mainParticles.resize();
+      performanceParticles.resize();
+      reviewsParticles.resize();
+      productParticles.resize();
+      purchaseParticles.resize();
+    });
+
+    // Button Click Events
+    document.querySelector('.discord-btn').addEventListener('click', () => {
+      window.location.href = 'https://discord.gg/freezegg';
+    });
+
+    // Product Data
+    const PRODUCTS = {
+      'AI_AIMBOT': {
+        title: 'AI AIMBOT',
+        subtitle: 'Advanced AI-powered aim assistance',
+        image: 'pic/aimbot.png',
+        options: [
+          { id: '2836cfbe-b826-4a31-943d-27cb3fb2791e', title: '1 Week', price: '€24.99', duration: 'Perfect for testing' },
+          { id: '89603a2b-e03f-4722-a145-80e8c19063a1', title: '1 Month', price: '€49.99', duration: 'Most popular' },
+          { id: '1ac404d6-b1fa-4578-ad5a-c2c720186d06', title: 'Lifetime', price: '€79.99', duration: 'Best value' }
+        ]
+      },
+      'TEMP_SPOOFER': {
+        title: 'TEMP SPOOFER',
+        subtitle: 'Temporary hardware ID spoofing solution',
+        image: 'pic/temp-spoofer.png',
+        options: [
+          { id: '28953c58-8949-40be-ae95-742e830133c0', title: '1 Day', price: '€2.99', duration: 'Quick fix' },
+          { id: 'dd45373b-850c-4525-bf34-530f97249cdb', title: '1 Week', price: '€14.99', duration: 'Short-term solution' },
+          { id: '9d515f40-8ca0-4b5d-a648-0138bb3de185', title: '1 Month', price: '€19.99', duration: 'Extended use' },
+          { id: 'c2641430-3e63-4da4-b776-b34525c4069f', title: 'Lifetime', price: '€39.99', duration: 'Lifetime Unabanned' }
+        ]
+      },
+      'PERM_SPOOFER': {
+        title: 'PERM SPOOFER',
+        subtitle: 'Permanent hardware ID spoofing solution',
+        image: 'pic/temp-spoofer.png',
+        options: [
+          { id: '5b75b81d-4e41-44f5-9010-fb9e3597e0d5', title: 'Onetime', price: '€25.99', duration: 'One-time permanent spoof' },
+          { id: 'ef246bcf-3857-4182-b318-845f281cd592', title: 'Lifetime', price: '€59.99', duration: 'Unlimited permanent spoofs' }
+        ]
+      }
+    };
+
+    // Store ID - Replace with your actual Store ID
+    const STORE_ID = '8a3f1c5f-4594-4c86-9272-620caac7c780';
+    let selectedProductId = null;
+    let currentProductType = null;
+
+    // Modal Elements
+    const exploreBtn = document.getElementById('explore-btn');
+    const productModal = document.getElementById('product-modal');
+    const closeProductModal = document.getElementById('close-product-modal');
+    const purchaseModal = document.getElementById('purchase-modal');
+    const closeModal = document.getElementById('close-modal');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const modalProductTitle = document.getElementById('modal-product-title');
+    const modalProductSubtitle = document.getElementById('modal-product-subtitle');
+    const modalProductImage = document.getElementById('modal-product-image');
+    const purchaseOptionsContainer = document.getElementById('purchase-options-container');
+
+    // Product Category Buttons
+    const aiAimbotCategory = document.getElementById('ai-aimbot-category');
+    const tempSpooferCategory = document.getElementById('temp-spoofer-category');
+    const permSpooferCategory = document.getElementById('perm-spoofer-category');
+
+    // Open Product Modal
+    exploreBtn.addEventListener('click', () => {
+      productModal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Close Product Modal
+    closeProductModal.addEventListener('click', () => {
+      productModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+
+    // Close Purchase Modal
+    closeModal.addEventListener('click', () => {
+      purchaseModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+
+    // Product Category Selection
+    aiAimbotCategory.addEventListener('click', () => {
+      openPurchaseModal('AI_AIMBOT');
+    });
+
+    tempSpooferCategory.addEventListener('click', () => {
+      openPurchaseModal('TEMP_SPOOFER');
+    });
+
+    permSpooferCategory.addEventListener('click', () => {
+      openPurchaseModal('PERM_SPOOFER');
+    });
+
+    // Open Purchase Modal with selected product
+    function openPurchaseModal(productType) {
+      currentProductType = productType;
+      const product = PRODUCTS[productType];
+      
+      // Update modal content
+      modalProductTitle.textContent = product.title;
+      modalProductSubtitle.textContent = product.subtitle;
+      modalProductImage.src = product.image;
+      modalProductImage.alt = product.title;
+      
+      // Clear previous options
+      purchaseOptionsContainer.innerHTML = '';
+      selectedProductId = null;
+      
+      // Add new options
+      product.options.forEach(option => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'purchase-option';
+        optionElement.setAttribute('data-product-id', option.id);
+        optionElement.innerHTML = `
+          <div class="option-title">${option.title}</div>
+          <div class="option-price">${option.price}</div>
+          <div class="option-duration">${option.duration}</div>
+        `;
+        
+        optionElement.addEventListener('click', () => {
+          document.querySelectorAll('.purchase-option').forEach(opt => opt.classList.remove('selected'));
+          optionElement.classList.add('selected');
+          selectedProductId = option.id;
+        });
+        
+        purchaseOptionsContainer.appendChild(optionElement);
+      });
+      
+      // Close product modal and open purchase modal
+      productModal.style.display = 'none';
+      purchaseModal.style.display = 'block';
+    }
+
+    // Checkout Button
+    checkoutBtn.addEventListener('click', () => {
+      if (selectedProductId) {
+        // Close our modal
+        purchaseModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // SellSn Checkout open
+        window.openSellSnModal(STORE_ID, selectedProductId);
+      } else {
+        alert('Please select an option first');
+      }
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === productModal) {
+        productModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+      if (e.target === purchaseModal) {
+        purchaseModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Initialize SellSn Embed
+    document.addEventListener('DOMContentLoaded', () => {
+      window.initializeSellSnEmbed();
+    });
+
+    // Scroll Animation for Performance Section
+    const performanceSection = document.querySelector('.performance-section');
+    
+    function checkScroll() {
+      const sectionTop = performanceSection.getBoundingClientRect().top;
+      const windowHeight = window.innerHeight;
+      
+      if (sectionTop < windowHeight * 0.75) {
+        performanceSection.classList.add('visible');
+      }
+    }
+
+    // Review Carousel Function
+    function setupReviewCarousel() {
+      const reviews = document.querySelectorAll('.review');
+      let currentIndex = 0;
+      
+      function showNextReview() {
+        reviews[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % reviews.length;
+        reviews[currentIndex].classList.add('active');
+      }
+      
+      reviews.forEach((review, index) => {
+        if (index !== 0) {
+          review.classList.remove('active');
+        }
+      });
+      
+      setInterval(showNextReview, 3000);
+    }
+
+    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('load', () => {
+      checkScroll();
+      setupReviewCarousel();
+    });
+  </script>
+</body>
+</html>
